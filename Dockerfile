@@ -44,7 +44,16 @@ RUN set -xe \
  && apt-get install -y --no-install-recommends mysql-client \
 
  # PHP Extensions
- && docker-php-ext-install -j$(nproc) pdo pdo_mysql mysqli opcache pcntl shmop sockets \
+ && docker-php-ext-install -j$(nproc) \
+    gettext json mbstring pdo \
+    opcache pcntl posix shmop sockets \
+
+ # PHP mysql
+ && docker-php-ext-install -j$(nproc) pdo_mysql mysqli \
+
+ # PHP pgsql
+ && apt-get install -y --no-install-recommends libpq-dev \
+ && docker-php-ext-install -j$(nproc) pdo_pgsql pgsql \
 
  # PHP mcrypt
  && apt-get install -y --no-install-recommends libmcrypt-dev \
@@ -62,20 +71,28 @@ RUN set -xe \
  && apt-get install -y --no-install-recommends libfreetype6-dev libjpeg62-turbo-dev libpng12-dev \
  && docker-php-ext-install -j$(nproc) gd \
 
+ # PHP apcu
+ && pecl install apcu-5.1.8 \
+ && docker-php-ext-enable apcu \
+
  # PHP imagick
  && apt-get install -y --no-install-recommends libmagickwand-dev \
- && pecl install imagick-3.4.3RC1 \
+ && pecl install imagick-3.4.3 \
  && docker-php-ext-enable imagick \
 
  # PHP event
  && apt-get install -y --no-install-recommends libssl-dev libcurl4-openssl-dev libevent-dev \
- && pecl install event-2.1.0 eio-2.0.1 \
+ && pecl install event-2.3.0 eio-2.0.2 \
  && docker-php-ext-enable event eio \
 
  # PHP geoip
  && apt-get install -y --no-install-recommends geoip-bin geoip-database libgeoip-dev \
  && pecl install geoip-1.1.1 \
  && docker-php-ext-enable geoip \
+
+ # PHP xdebug
+ # && pecl install xdebug-2.5.3 \
+ # && docker-php-ext-enable xdebug \ # to enable xdebug manualy call this command in container
 
  # PHP geoip database
  && mkdir /usr/local/share/GeoIP/ \
@@ -84,16 +101,12 @@ RUN set -xe \
  && gunzip GeoLite2-City.mmdb.gz \
 
  # Clean
- && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/* \
 
-ONBUILD ARG GITHUB_OAUTH_TOKEN
-
-ONBUILD RUN set -xe \
+ # Composer
  && cd /opt \
  && curl -sS https://getcomposer.org/installer | php \
- && ln -s /opt/composer.phar /usr/local/bin/composer \
- && gosu www-data composer config -g github-oauth.github.com $GITHUB_OAUTH_TOKEN \
- && gosu www-data composer global require "fxp/composer-asset-plugin:^1.2.0"
+ && ln -s /opt/composer.phar /usr/local/bin/composer
 
 COPY supervisor.d/ /etc/supervisor/
 
