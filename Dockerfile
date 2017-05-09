@@ -24,6 +24,7 @@ RUN set -xe \
  && apt-get install -y --no-install-recommends \
         apt-utils bash-completion ca-certificates gnupg2 net-tools ssh-client \
         gcc make rsync chrpath curl wget rsync git vim unzip bzip2 supervisor \
+        ruby ruby-dev \
 
  # GOSU
  && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
@@ -99,6 +100,9 @@ RUN set -xe \
  && cd /usr/local/share/GeoIP/ \
  && curl -O "http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz" 2>&1 \
  && gunzip GeoLite2-City.mmdb.gz \
+
+ # Install ruby gems
+ && gem install premailer nokogiri \
 
  # Clean
  && rm -rf /var/lib/apt/lists/* \
