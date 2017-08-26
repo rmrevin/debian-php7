@@ -76,6 +76,10 @@ RUN set -xe \
  && pecl install apcu-5.1.8 \
  && docker-php-ext-enable apcu \
 
+ # PHP xdebug
+ # && pecl install xdebug-2.5.3 \
+ # && docker-php-ext-enable xdebug \ # to enable xdebug manualy call this command in container
+
  # PHP imagick
  && apt-get install -y --no-install-recommends libmagickwand-dev \
  && pecl install imagick-3.4.3 \
@@ -83,17 +87,18 @@ RUN set -xe \
 
  # PHP event
  && apt-get install -y --no-install-recommends libssl-dev libcurl4-openssl-dev libevent-dev \
- && pecl install event-2.3.0 eio-2.0.2 \
- && docker-php-ext-enable event eio \
+ && pecl install event-2.3.0 eio-2.0.2 inotify-2.0.0 \
+ && docker-php-ext-enable event eio inotify \
+
+ # PHP redis
+ #&& apt-get install -y --no-install-recommends libmagickwand-dev \
+ && pecl install redis-3.1.3 \
+ && docker-php-ext-enable redis \
 
  # PHP geoip
  && apt-get install -y --no-install-recommends geoip-bin geoip-database libgeoip-dev \
  && pecl install geoip-1.1.1 \
  && docker-php-ext-enable geoip \
-
- # PHP xdebug
- # && pecl install xdebug-2.5.3 \
- # && docker-php-ext-enable xdebug \ # to enable xdebug manualy call this command in container
 
  # PHP geoip database
  && mkdir /usr/local/share/GeoIP/ \
