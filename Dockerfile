@@ -24,7 +24,6 @@ RUN set -xe \
  && apt-get install -y --no-install-recommends \
         apt-utils bash-completion ca-certificates gnupg2 net-tools ssh-client \
         gcc make rsync chrpath curl wget rsync git vim unzip bzip2 supervisor \
-        ruby ruby-dev \
 
  # GOSU
  && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
@@ -46,7 +45,7 @@ RUN set -xe \
 
  # PHP Extensions
  && docker-php-ext-install -j$(nproc) \
-    gettext json mbstring pdo \
+    bcmath gettext json mbstring pdo \
     opcache pcntl posix shmop sockets \
 
  # PHP mysql
@@ -77,7 +76,7 @@ RUN set -xe \
  && docker-php-ext-enable apcu \
 
  # PHP xdebug
- # && pecl install xdebug-2.5.3 \
+ && pecl install xdebug-2.5.5 \
  # && docker-php-ext-enable xdebug \ # to enable xdebug manualy call this command in container
 
  # PHP imagick
@@ -91,9 +90,17 @@ RUN set -xe \
  && docker-php-ext-enable event eio inotify \
 
  # PHP redis
- #&& apt-get install -y --no-install-recommends libmagickwand-dev \
  && pecl install redis-3.1.3 \
  && docker-php-ext-enable redis \
+
+ # PHP mongodb
+ && pecl install mongodb-1.2.9 \
+ && docker-php-ext-enable mongodb \
+
+ # PHP memcached
+ && apt-get install -y --no-install-recommends libmemcached-dev zlib1g-dev \
+ && pecl install memcached-3.0.3 \
+ && docker-php-ext-enable memcached \
 
  # PHP geoip
  && apt-get install -y --no-install-recommends geoip-bin geoip-database libgeoip-dev \
@@ -105,9 +112,6 @@ RUN set -xe \
  && cd /usr/local/share/GeoIP/ \
  && curl -O "http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz" 2>&1 \
  && gunzip GeoLite2-City.mmdb.gz \
-
- # Install ruby gems
- && gem install premailer nokogiri \
 
  # Clean
  && rm -rf /var/lib/apt/lists/* \
