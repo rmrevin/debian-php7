@@ -22,8 +22,8 @@ ARG GOSU_VERSION=1.10
 RUN set -xe \
  && apt-get update -qq \
  && apt-get install -y --no-install-recommends \
-        apt-utils bash-completion ca-certificates gnupg2 net-tools ssh-client \
-        gcc make rsync chrpath curl wget rsync git vim unzip bzip2 supervisor \
+        apt-utils bash-completion ca-certificates gnupg2 bzip2 net-tools ssh-client \
+        dirmngr gcc make rsync chrpath curl wget rsync git vim unzip htop cron supervisor \
 
  # GOSU
  && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
@@ -56,11 +56,11 @@ RUN set -xe \
  && docker-php-ext-install -j$(nproc) pdo_pgsql pgsql \
 
  # PHP mcrypt
- && apt-get install -y --no-install-recommends libmcrypt-dev \
- && docker-php-ext-install -j$(nproc) mcrypt \
+ #&& apt-get install -y --no-install-recommends libmcrypt-dev \
+ #&& docker-php-ext-install -j$(nproc) mcrypt \
 
  # PHP intl
- && apt-get install -y --no-install-recommends libicu-dev libicu52 \
+ && apt-get install -y --no-install-recommends libicu-dev libicu57 \
  && docker-php-ext-install -j$(nproc) intl \
 
  # PHP zip
@@ -68,8 +68,12 @@ RUN set -xe \
  && docker-php-ext-install -j$(nproc) zip \
 
  # PHP gd
- && apt-get install -y --no-install-recommends libfreetype6-dev libjpeg62-turbo-dev libpng12-dev \
+ && apt-get install -y --no-install-recommends libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
  && docker-php-ext-install -j$(nproc) gd \
+
+ # PHP gmp
+ && apt-get install -y --no-install-recommends libgmp-dev \
+ && docker-php-ext-install -j$(nproc) gmp \
 
  # PHP apcu
  && pecl install apcu-5.1.8 \
@@ -122,6 +126,10 @@ RUN set -xe \
  && ln -s /opt/composer.phar /usr/local/bin/composer
 
 COPY supervisor.d/ /etc/supervisor/
+
+COPY entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
 
 WORKDIR /var/www/
 
