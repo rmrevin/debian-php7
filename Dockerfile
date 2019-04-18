@@ -37,7 +37,7 @@ RUN set -xe \
  && gosu nobody true \
 
  # MySQL
- && apt-key adv --keyserver pgp.mit.edu --recv-keys 5072E1F5 \
+ && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 8C718D3B5072E1F5 \
  && echo "deb http://repo.mysql.com/apt/debian/ jessie mysql-apt-config" >> /etc/apt/sources.list.d/mysql.list \
  && echo "deb http://repo.mysql.com/apt/debian/ jessie mysql-5.7" >> /etc/apt/sources.list.d/mysql.list \
  && echo "deb-src http://repo.mysql.com/apt/debian/ jessie mysql-5.7" >> /etc/apt/sources.list.d/mysql.list \
